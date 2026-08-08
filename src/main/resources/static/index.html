@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Encurtador de URL</title>
+
+    <style>
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body{
+            background:#0f172a;
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            min-height:100vh;
+            color:white;
+        }
+
+        .container{
+            width:600px;
+            background:#1e293b;
+            padding:30px;
+            border-radius:15px;
+            box-shadow:0 0 20px rgba(0,0,0,0.4);
+        }
+
+        h1{
+            text-align:center;
+            margin-bottom:20px;
+        }
+
+        .descricao{
+            text-align:center;
+            margin-bottom:20px;
+            color:#cbd5e1;
+        }
+
+        input{
+            width:100%;
+            padding:15px;
+            border:none;
+            border-radius:10px;
+            margin-bottom:15px;
+            font-size:16px;
+        }
+
+        button{
+            width:100%;
+            padding:15px;
+            border:none;
+            border-radius:10px;
+            background:#3b82f6;
+            color:white;
+            font-size:16px;
+            cursor:pointer;
+        }
+
+        button:hover{
+            background:#2563eb;
+        }
+
+        .resultado{
+            margin-top:20px;
+            padding:15px;
+            background:#334155;
+            border-radius:10px;
+            display:none;
+        }
+
+        .resultado p{
+            margin:8px 0;
+            color:white;
+        }
+
+        .link-curto{
+            color:#60a5fa;
+            font-weight:bold;
+            font-size:18px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <h1>🔗 Encurtador de URL</h1>
+
+    <p class="descricao">
+        Transforme URLs gigantes em links curtos.
+    </p>
+
+    <input
+            type="text"
+            id="url"
+            placeholder="https://www.estudarjava.com.br">
+
+    <button onclick="encurtarUrl()">
+        Encurtar URL
+    </button>
+
+    <div class="resultado" id="resultado">
+
+        <p><strong>URL Original:</strong></p>
+        <p id="original"></p>
+
+        <p><strong>Código Curto:</strong></p>
+        <p id="curta" class="link-curto"></p>
+
+    </div>
+
+</div>
+
+<script>
+
+    async function encurtarUrl() {
+
+        const url = document.getElementById("url").value;
+
+        if (url.trim() === "") {
+            alert("Digite uma URL!");
+            return;
+        }
+
+        try {
+
+            const response = await fetch(
+                "http://localhost:8080/urls/criar",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "text/plain"
+                    },
+                    body: url
+                }
+            );
+
+            if (!response.ok) {
+                throw new Error("Erro ao criar URL");
+            }
+
+            const data = await response.json();
+
+            console.log(data);
+
+            document.getElementById("original").innerText =
+                data.originalUrl;
+
+            document.getElementById("curta").innerText =
+                data.shortCode;
+
+            document.getElementById("resultado").style.display =
+                "block";
+
+        } catch (error) {
+
+            console.error(error);
+
+            alert("Erro ao conectar com a API");
+
+        }
+    }
+
+</script>
+
+</body>
+</html>
